@@ -15,16 +15,43 @@ body {
 
 #sidebar {
   float: right;
-  width: 100px;
+  width: 150px;
+  padding-top: 130px;
+}
+
+#sidebar h6 {
+  font-weight: bold;
+  font-size: 12px;
+  margin-top: 25px;
+  margin-bottom: 0;
 }
 
 .sequence {
   width: 960px;
-  height: 40px;
+  height: 45px;
 }
 
 .legend {
+  list-style-type: none;
   padding: 10px 0 0 3px;
+}
+
+ul.legend li {
+  height: 20px;
+}
+
+.legend .box {
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  border: 1px solid #dedede;
+  margin-top: 3px;
+}
+
+.legend .title {
+  height: 15px;
+  margin-left: 5px;
+  vertical-align: top;
 }
 
 .sequence text, .legend text {
@@ -43,12 +70,39 @@ body {
 
 .explanation {
   position: absolute;
-  top: 260px;
+  top: 230px;
   left: 305px;
   width: 140px;
   text-align: center;
   color: #666;
   z-index: -1;
+}
+
+.explanation .sentence {
+  font-weight: 700;
+}
+
+.description {
+  position: absolute;
+  top: 225px;
+  left: 305px;
+  width: 140px;
+  text-align: center;
+  color: #666;
+  z-index: -1;
+}
+
+.description .title {
+  display: block;
+  position: absolute;
+  top: 55px;
+  margin-left: -80px;
+  width: 300px;
+    font-size: 1.8em;
+}
+
+.description .year {
+  font-size: 3em;
 }
 
 .percentage {

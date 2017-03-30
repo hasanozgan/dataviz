@@ -12,44 +12,50 @@ var b = {
 
 // Mapping of step names to colors.
 var colors = {
-  "male": "#1565C0",
-  "female": "#EF6C00",
+  "male": ["#1565C0", "#FFFFFF"],
+  "female": ["#EF6C00", "#FFFFFF"],
 
-  "male-50": "#64B5F6",
-  "male-100": "#42A5F5",
-  "male-150": "#2196F3",
-  "male-200": "#1E88E5",
-  "male-1000": "#1976D2",
+  "male-50": ["#64B5F6", "#FFFFFF"],
+  "male-100": ["#42A5F5", "#FFFFFF"],
+  "male-150": ["#2196F3", "#FFFFFF"],
+  "male-200": ["#1E88E5", "#FFFFFF"],
+  "male-1000": ["#1976D2", "#FFFFFF"],
 
-  "female-50": "#FFB74D",
-  "female-100": "#FFA726",
-  "female-150": "#FF9800",
-  "female-200": "#FB8C00",
-  "female-1000": "#F57C00",
+  "female-50": ["#FFB74D", "#000000"],
+  "female-100": ["#FFA726", "#000000"],
+  "female-150": ["#FF9800", "#000000"],
+  "female-200": ["#FB8C00", "#FFFFFF"],
+  "female-1000": ["#F57C00", "#FFFFFF"],
 
-  "male-healthcare": "#0288D1",
-  "male-education": "#039BE5",
-  "male-stem": "#03A9F4",
-  "male-retail": "#039BE5",
-  "male-transportation": "#03A9F4",
-  "male-lawnsecurity": "#29B6F6",
-  "male-realestate": "#4FC3F7",
-  "male-services": "#81D4FA",
-  "male-whitecolar": "#B3E5FC",
-  "male-publicservices": "#80D8FF",
+  "male-healthcare": ["#0277BD", "#FFFFFF"], // 800
+  "male-education": ["#0288D1", "#FFFFFF"], // 700
+  "male-stem": ["#039BE5", "#FFFFFF"], // 600
+  "male-retail": ["#03A9F4", "#FFFFFF"], // 500
+  "male-transportation": ["#29B6F6", "#FFFFFF"], //400
+  "male-lawnsecurity": ["#4FC3F7", "#000000"], // 300
+  "male-realestate": ["#00B0FF", "#FFFFFF"], // A400
+  "male-services": ["#40C4FF", "#000000"], // A200
+  "male-whitecolar": ["#81D4FA", "#000000"], // 200
+  "male-publicservices": ["#80D8FF", "#000000"], // A100
 
 
-  "female-healthcare": "#FFA000",
-  "female-education": "#FFB300",
-  "female-stem": "#FFC107",
-  "female-retail": "#FFCA28",
-  "female-transportation": "#FFD54F",
-  "female-lawnsecurity": "#FFE082",
-  "female-realestate": "#FFECB3",
-  "female-services": "#FFD740",
-  "female-whitecolar": "#FFE57F",
-  "female-publicservices": "#FFD180"
+  "female-healthcare": ["#FF8F00", "#FFFFFF"],// 800
+  "female-education": ["#FFA000", "#FFFFFF"],// 700
+  "female-stem": ["#FFB300", "#000000"], //600
+  "female-retail": ["#FFC107", "#000000"],//500
+  "female-transportation": ["#FFCA28", "#000000"],//400
+  "female-lawnsecurity": ["#FFD54F", "#000000"],//300
+  "female-realestate": ["#FFC400", "#000000"],//A400
+  "female-services": ["#FFD740", "#000000"],//A200
+  "female-whitecolar": ["#FFE082", "#000000"],//200
+  "female-publicservices": ["#FFE57F", "#000000"]//A100
 };
+
+var legends = {
+  "gender": ["male", "female"],
+  "sector": ["healthcare", "education", "stem", "retail", "transportation", "lawnsecurity", "realestate","services","whitecolar","publicservices"],
+  "salary": ["1000", "200", "150", "100", "50"]
+}
 
 var titles = {
   "male": "Male",
@@ -73,11 +79,12 @@ var titles = {
   "publicservices": "Public Services"
 }
 
-makeVisualization("#all", "gender_salary_sector.csv");
+makeVisualization("#all", "data/gender_salary_sector.csv");
 makeVisualization("#year2011", "data/gender_salary_sector_2011.csv");
 makeVisualization("#year2012", "data/gender_salary_sector_2012.csv");
 makeVisualization("#year2013", "data/gender_salary_sector_2013.csv");
 makeVisualization("#year2014", "data/gender_salary_sector_2014.csv");
+makeLegend();
 
 function makeVisualization(selector, csvFilename) {
 
@@ -114,8 +121,6 @@ function makeVisualization(selector, csvFilename) {
   function createVisualization(json) {
     // Basic setup of page elements.
     initializeBreadcrumbTrail();
-    drawLegend();
-    d3.select(selector + " .togglelegend").on("click", toggleLegend);
 
     // Bounding circle underneath the sunburst, to make it easier to detect
     // when the mouse leaves the parent g.
@@ -137,7 +142,9 @@ function makeVisualization(selector, csvFilename) {
         .attr("fill-rule", "evenodd")
         .style("fill", function(d) {
           type = makeType(d);
-          return colors[type];
+          if (type.length > 0) {
+            return colors[type][0];
+          }
          })
         .style("opacity", 1)
         .on("mouseover", mouseover);
@@ -160,8 +167,13 @@ function makeVisualization(selector, csvFilename) {
      d3.select(selector + " .percentage")
          .text(percentageString);
 
+         $(selector + " .sentence").html(makeSentence(d));
+
      d3.select(selector + " .explanation")
          .style("visibility", "");
+
+     d3.select(selector + " .description")
+         .style("visibility", "hidden");
 
      var sequenceArray = getAncestors(d);
      updateBreadcrumbs(sequenceArray, percentageString);
@@ -199,6 +211,10 @@ function makeVisualization(selector, csvFilename) {
 
      d3.select(selector + " .explanation")
          .style("visibility", "hidden");
+
+     d3.select(selector + " .description")
+         .style("visibility", "");
+
    }
 
    function initializeBreadcrumbTrail() {
@@ -227,9 +243,10 @@ function makeVisualization(selector, csvFilename) {
      entering.append("svg:polygon")
          .attr("points", breadcrumbPoints)
          .style("fill", function(d) {
-           // TODO 2
            type  = makeType(d);
-           return colors[type];
+           if (type.length > 0) {
+             return colors[type][0];
+           }
          });
 
      entering.append("svg:text")
@@ -238,7 +255,13 @@ function makeVisualization(selector, csvFilename) {
          .attr("width", b.w + b.t)
          .attr("dy", "0.35em")
          .attr("text-anchor", "middle")
-         .text(function(d) { return titles[d.name]; });
+         .text(function(d) { return titles[d.name]; })
+         .style("fill", function(d) {
+           type  = makeType(d);
+           if (type.length > 0) {
+             return colors[type][1];
+           }
+         });
 
      // Set position for entering and updating nodes.
      g.attr("transform", function(d, i) {
@@ -261,48 +284,6 @@ function makeVisualization(selector, csvFilename) {
          .style("visibility", "");
 
    }
-
-   function drawLegend() {
-     // Dimensions of legend item: width, height, spacing, radius of rounded rect.
-     var li = {
-       w: 75, h: 30, s: 3, r: 3
-     };
-
-     var legend = d3.select(selector + " .legend").append("svg:svg")
-         .attr("width", li.w)
-         .attr("height", d3.keys(colors).length * (li.h + li.s));
-
-     var g = legend.selectAll("g")
-         .data(d3.entries(colors))
-         .enter().append("svg:g")
-         .attr("transform", function(d, i) {
-                 return "translate(0," + i * (li.h + li.s) + ")";
-              });
-
-     g.append("svg:rect")
-         .attr("rx", li.r)
-         .attr("ry", li.r)
-         .attr("width", li.w)
-         .attr("height", li.h)
-         .style("fill", function(d) { return d.value; });
-
-     g.append("svg:text")
-         .attr("x", li.w / 2)
-         .attr("y", li.h / 2)
-         .attr("dy", "0.35em")
-         .attr("text-anchor", "middle")
-         .text(function(d) { return titles[d.key]; });
-   }
-
-   function toggleLegend() {
-     var legend = d3.select(selector + " .legend");
-     if (legend.style("visibility") == "hidden") {
-       legend.style("visibility", "");
-     } else {
-       legend.style("visibility", "hidden");
-     }
-   }
-
 
 
    // Given a node in a partition layout, return an array of all of its ancestor
@@ -355,6 +336,17 @@ function makeVisualization(selector, csvFilename) {
      }
    }
 
+   function makeSentence(d) {
+     var sequenceArray = getAncestors(d);
+     var sentence = ""
+     for (i = 0; i < sequenceArray.length; i++) {
+       sentence += titles[sequenceArray[i].name]
+       if (i < (sequenceArray.length-1))
+         sentence += "<br/>";
+     }
+     return sentence;
+   }
+
    // Take a 2-column CSV and transform it into a hierarchical structure suitable
    // for a partition layout. The first column is a sequence of step names, from
    // root to leaf, separated by hyphens. The second column is a count of how
@@ -398,5 +390,34 @@ function makeVisualization(selector, csvFilename) {
      }
      return root;
    };
+}
+
+function makeColorBox(keys, multiCode=false) {
+  var str = ""
+  for (var i = 0; i < keys.length; i++) {
+    var key = keys[i];
+
+    str += "<li>";
+    if (multiCode) {
+      str += "<span class='box' style='background-color:"+colors["male-"+key][0]+"'></span>";
+      str += "<span class='box' style='background-color:"+colors["female-"+key][0]+"'></span>";
+    } else {
+      str += "<span class='box' style='background-color:"+colors[key][0]+"'></span>";
+    }
+
+    str += "<span class='title'>"+titles[key]+"</span>";
+    str += "</li>";
+  }
+
+  return "<ul class='legend'>"+str+"</ul>"
+}
+
+function makeLegend() {
+  var gender = makeColorBox(legends.gender);
+  var salary  = makeColorBox(legends.salary, true);
+  var sector = makeColorBox(legends.sector, true);
+  $("#sidebar .gender").html(gender);
+  $("#sidebar .salary").html(salary);
+  $("#sidebar .sector").html(sector);
 
 }

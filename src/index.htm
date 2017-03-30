@@ -2,17 +2,13 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Sequences sunburst</title>
-    <script src="http://d3js.org/d3.v3.min.js"></script>
-    <link rel="stylesheet" type="text/css"
-      href="https://bootswatch.com/paper/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css"
-      href="https://fonts.googleapis.com/css?family=Open+Sans:400,600">
+    <title>Gender Pay Gap by Sector</title>
+    <link rel="stylesheet" type="text/css" href="https://bootswatch.com/paper/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open+Sans:400,600">
     <link rel="stylesheet" type="text/css" href="sequences.css"/>
   </head>
   <body>
     <div id="main">
-      <h4 style="text-align:center">Gender Pay Gap by Sector</h4>
       <!-- Nav tabs -->
       <ul class="nav nav-tabs" role="tablist">
         <li role="presentation" class="active"><a href="#all" aria-controls="all" role="tab" data-toggle="tab">All</a></li>
@@ -29,7 +25,10 @@
           <div class="chart">
             <div class="explanation" style="visibility: hidden;">
               <span class="percentage"></span><br/>
-              of visits begin with this sequence of pages
+              <span class="sentence"></span>
+            </div>
+            <div class="description">
+              <span class="title">Gender Pay Gap by Sector</span>
             </div>
           </div>
 
@@ -39,7 +38,11 @@
           <div class="chart">
             <div class="explanation" style="visibility: hidden;">
               <span class="percentage"></span><br/>
-              of visits begin with this sequence of pages
+              <span class="sentence"></span>
+            </div>
+            <div class="description">
+              <span class="year">2011</span>
+              <span class="title">Gender Pay Gap by Sector</span>
             </div>
           </div>
         </div>
@@ -48,7 +51,11 @@
           <div class="chart">
             <div class="explanation" style="visibility: hidden;">
               <span class="percentage"></span><br/>
-              of visits begin with this sequence of pages
+              <span class="sentence"></span>
+            </div>
+            <div class="description">
+              <span class="year">2012</span>
+              <span class="title">Gender Pay Gap by Sector</span>
             </div>
           </div>
         </div>
@@ -57,7 +64,11 @@
           <div class="chart">
             <div class="explanation" style="visibility: hidden;">
               <span class="percentage"></span><br/>
-              of visits begin with this sequence of pages
+              <span class="sentence"></span>
+            </div>
+            <div class="description">
+              <span class="year">2013</span>
+              <span class="title">Gender Pay Gap by Sector</span>
             </div>
           </div>
         </div>
@@ -66,25 +77,41 @@
           <div class="chart">
             <div class="explanation" style="visibility: hidden;">
               <span class="percentage"></span><br/>
-              of visits begin with this sequence of pages
+              <span class="sentence"></span>
+            </div>
+            <div class="description">
+              <span class="year">2014</span>
+              <span class="title">Gender Pay Gap by Sector</span>
             </div>
           </div>
         </div>
       </div>
     </div>
     <div id="sidebar">
-      <input type="checkbox" class="togglelegend"> Legend<br/>
-      <div class="legend" style="visibility: hidden;"></div>
+      <h6>Gender</h6>
+      <div class="gender">
+
+      </div>
+
+      <h6>Salary Group</h6>
+      <div class="salary">
+
+      </div>
+
+      <h6>Sectors</h6>
+      <div class="sector">
+
+      </div>
+
     </div>
-    <script
-      src="https://code.jquery.com/jquery-3.2.1.min.js"
-      integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
-      crossorigin="anonymous"></script>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
     <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="http://d3js.org/d3.v3.min.js"></script>
     <script type="text/javascript" src="sequences.js"></script>
-    <script type="text/javascript">
-      // Hack to make this example display correctly in an iframe on bl.ocks.org
-      d3.select(self.frameElement).style("height", "700px");
-  </script>
+    <!-- <script type="text/javascript">
+      // // Hack to make this example display correctly in an iframe on bl.ocks.org
+      // d3.select(self.frameElement).style("height", "700px");
+  </script> -->
   </body>
 </html>
