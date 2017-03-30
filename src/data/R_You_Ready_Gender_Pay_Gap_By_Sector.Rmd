@@ -232,18 +232,37 @@ ggplot(data = salaries_g2, aes( x = Sector2, fill = gender)) +
 library(dplyr)
 salaries_g3 <- salaries_g2 %>% mutate(name = paste(gender, SalaryGroup, Sector, sep="-"))
 
+gender_salarygroup_sector <- salaries_g3 %>% group_by(name) %>% summarise(count = n())
+write.table(gender_salarygroup_sector, file = "gender_salary_sector.csv", row.names=FALSE, col.names=FALSE, sep=",", quote = FALSE)
+
+gender_salarygroup_sector_2011 <- salaries_g3 %>% filter(Year==2011) %>% group_by(name) %>% summarise(count = n())
+write.table(gender_salarygroup_sector_2011, file = "gender_salary_sector_2011.csv", row.names=FALSE, col.names=FALSE, sep=",", quote = FALSE)
+
+gender_salarygroup_sector_2012 <- salaries_g3 %>% filter(Year==2012) %>% group_by(name) %>% summarise(count = n())
+write.table(gender_salarygroup_sector_2012, file = "gender_salary_sector_2012.csv", row.names=FALSE, col.names=FALSE, sep=",", quote = FALSE)
+
+gender_salarygroup_sector_2013  <- salaries_g3 %>% filter(Year==2013) %>% group_by(name) %>% summarise(count = n())
+write.table(gender_salarygroup_sector_2013, file = "gender_salary_sector_2013.csv", row.names=FALSE, col.names=FALSE, sep=",", quote = FALSE)
+
+gender_salarygroup_sector_2014 <- salaries_g3 %>% filter(Year==2014) %>% group_by(name) %>% summarise(count = n())
+write.table(gender_salarygroup_sector_2014, file = "gender_salary_sector_2014.csv", row.names=FALSE, col.names=FALSE, sep=",", quote = FALSE)
+```
+```{r}
+library(dplyr)
+salaries_g3 <- salaries_g2 %>% mutate(name = paste(gender, Sector, SalaryGroup, sep="-"))
+
 gender_sector_salarygroup <- salaries_g3 %>% group_by(name) %>% summarise(count = n())
-write.table(gender_sector_salarygroup, file = "gender_salary_sector.csv", row.names=FALSE, col.names=FALSE, sep=",", quote = FALSE)
+write.table(gender_sector_salarygroup, file = "gender_sector_salary.csv", row.names=FALSE, col.names=FALSE, sep=",", quote = FALSE)
 
 gender_sector_salarygroup_2011 <- salaries_g3 %>% filter(Year==2011) %>% group_by(name) %>% summarise(count = n())
-write.table(gender_sector_salarygroup_2011, file = "gender_salary_sector_2011.csv", row.names=FALSE, col.names=FALSE, sep=",", quote = FALSE)
+write.table(gender_sector_salarygroup_2011, file = "gender_sector_salary_2011.csv", row.names=FALSE, col.names=FALSE, sep=",", quote = FALSE)
 
 gender_sector_salarygroup_2012 <- salaries_g3 %>% filter(Year==2012) %>% group_by(name) %>% summarise(count = n())
-write.table(gender_sector_salarygroup_2012, file = "gender_salary_sector_2012.csv", row.names=FALSE, col.names=FALSE, sep=",", quote = FALSE)
+write.table(gender_sector_salarygroup_2012, file = "gender_sector_salary_2012.csv", row.names=FALSE, col.names=FALSE, sep=",", quote = FALSE)
 
 gender_sector_salarygroup_2013  <- salaries_g3 %>% filter(Year==2013) %>% group_by(name) %>% summarise(count = n())
-write.table(gender_sector_salarygroup_2013, file = "gender_salary_sector_2013.csv", row.names=FALSE, col.names=FALSE, sep=",", quote = FALSE)
+write.table(gender_sector_salarygroup_2013, file = "gender_sector_salary_2013.csv", row.names=FALSE, col.names=FALSE, sep=",", quote = FALSE)
 
 gender_sector_salarygroup_2014 <- salaries_g3 %>% filter(Year==2014) %>% group_by(name) %>% summarise(count = n())
-write.table(gender_sector_salarygroup_2014, file = "gender_salary_sector_2014.csv", row.names=FALSE, col.names=FALSE, sep=",", quote = FALSE)
+write.table(gender_sector_salarygroup_2014, file = "gender_sector_salary_2014.csv", row.names=FALSE, col.names=FALSE, sep=",", quote = FALSE)
 ```

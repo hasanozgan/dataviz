@@ -79,11 +79,6 @@ var titles = {
   "publicservices": "Public Services"
 }
 
-makeVisualization("#all", "data/gender_salary_sector.csv");
-makeVisualization("#year2011", "data/gender_salary_sector_2011.csv");
-makeVisualization("#year2012", "data/gender_salary_sector_2012.csv");
-makeVisualization("#year2013", "data/gender_salary_sector_2013.csv");
-makeVisualization("#year2014", "data/gender_salary_sector_2014.csv");
 makeLegend();
 
 function makeVisualization(selector, csvFilename) {
