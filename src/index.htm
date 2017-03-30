@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Sequences sunburst</title>
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <link rel="stylesheet" type="text/css"
+      href="https://bootswatch.com/paper/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css"
+      href="https://fonts.googleapis.com/css?family=Open+Sans:400,600">
+    <link rel="stylesheet" type="text/css" href="sequences.css"/>
+  </head>
+  <body>
+    <div id="main">
+      <h4 style="text-align:center">Gender Pay Gap by Sector</h4>
+      <!-- Nav tabs -->
+      <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active"><a href="#all" aria-controls="all" role="tab" data-toggle="tab">All</a></li>
+        <li role="presentation"><a href="#year2011" aria-controls="2011" role="tab" data-toggle="tab">2011</a></li>
+        <li role="presentation"><a href="#year2012" aria-controls="2012" role="tab" data-toggle="tab">2012</a></li>
+        <li role="presentation"><a href="#year2013" aria-controls="2013" role="tab" data-toggle="tab">2013</a></li>
+        <li role="presentation"><a href="#year2014" aria-controls="2014" role="tab" data-toggle="tab">2014</a></li>
+      </ul>
+
+      <!-- Tab panes -->
+      <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="all">
+          <div class="sequence"></div>
+          <div class="chart">
+            <div class="explanation" style="visibility: hidden;">
+              <span class="percentage"></span><br/>
+              of visits begin with this sequence of pages
+            </div>
+          </div>
+
+        </div>
+        <div role="tabpanel" class="tab-pane" id="year2011">
+          <div class="sequence"></div>
+          <div class="chart">
+            <div class="explanation" style="visibility: hidden;">
+              <span class="percentage"></span><br/>
+              of visits begin with this sequence of pages
+            </div>
+          </div>
+        </div>
+        <div role="tabpanel" class="tab-pane" id="year2012">
+          <div class="sequence"></div>
+          <div class="chart">
+            <div class="explanation" style="visibility: hidden;">
+              <span class="percentage"></span><br/>
+              of visits begin with this sequence of pages
+            </div>
+          </div>
+        </div>
+        <div role="tabpanel" class="tab-pane" id="year2013">
+          <div class="sequence"></div>
+          <div class="chart">
+            <div class="explanation" style="visibility: hidden;">
+              <span class="percentage"></span><br/>
+              of visits begin with this sequence of pages
+            </div>
+          </div>
+        </div>
+        <div role="tabpanel" class="tab-pane" id="year2014">
+          <div class="sequence"></div>
+          <div class="chart">
+            <div class="explanation" style="visibility: hidden;">
+              <span class="percentage"></span><br/>
+              of visits begin with this sequence of pages
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="sidebar">
+      <input type="checkbox" class="togglelegend"> Legend<br/>
+      <div class="legend" style="visibility: hidden;"></div>
+    </div>
+    <script
+      src="https://code.jquery.com/jquery-3.2.1.min.js"
+      integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+      crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="sequences.js"></script>
+    <script type="text/javascript">
+      // Hack to make this example display correctly in an iframe on bl.ocks.org
+      d3.select(self.frameElement).style("height", "700px");
+  </script>
+  </body>
+</html>

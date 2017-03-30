@@ -1,0 +1,189 @@
+---
+title: "SF_Salaries_Project"
+author: "R_U_Ready"
+date: "01 January 2017"
+output: html_document
+---
+
+#importing SanFrancisco salary data 
+```{r importing SanFrancisco salary data}
+install.packages('knit')
+install.packages('ggplot2')
+install.packages('reshape2')
+install.packages('tm')
+install.packages('RColorBrewer')
+install.packages('wordcloud')
+
+library(ggplot2)
+library(tm)
+library(dplyr)
+library(gender)
+library(tidyr)
+
+library(wordcloud)
+
+df <- read.csv("sf-salaries.csv", na = c("Not Provided", "NotProvided", "Not provided"))
+```
+
+# Clean NA Fields
+```{r}
+df <- subset(df, !is.na(Employee.Name) & !is.na(OvertimePay) & !is.na(OtherPay) &  !is.na(BasePay) & !is.na(JobTitle))
+
+str(df)
+summary(df)
+```
+
+# Found Firstname
+```{r}
+salaries_e <- extract(df, Employee.Name, c("FirstName", "LastName"), "([^ ]+) (.*)", remove = FALSE)
+salaries_e$GenderYear <- 2012
+
+str(salaries_e)
+summary(salaries_e)
+```
+# Create Gender Field
+```{r}
+genderdf <- gender_df(salaries_e, name_col = "FirstName", year_col = "GenderYear", method = c("ssa", "ipums", "napp", "demo"))
+salaries_g <- merge(salaries_e, genderdf[ , c("name", "gender")], by.x="FirstName", by.y="name", all.x=TRUE, )
+salaries_g$gender <- as.factor(salaries_g$gender)
+salaries_g$GenderYear <- NULL
+
+str(salaries_g)
+summary(salaries_g)
+
+y <-salaries_g %>% select(Employee.Name, gender) %>% filter(is.na(gender)) %>% unique() %>% select(Employee.Name)
+```
+
+# Create Sector Field 
+```{r}
+salaries_g[grep("police|sherif|probation|sergeant|investigator|guard|security|custodian|lawyer|judge|criminalist|criminal|COURT", salaries_g$JobTitle, ignore.case = TRUE), "Sector"] <- "LAW n SECURITY"
+
+salaries_g[grep("doctor|nurs|anesth|epidemiologist|psychologist|nutritionist|chemist|emergency med|pathologist|health|hlth|therapist|hospital|imaging|physician|orthopedic|pharm|dental|dentist|medical|ACUPUNCTURIST|radiologic| audiometrist|emergency|
+med|audiologist|Psychiatric", salaries_g$JobTitle, ignore.case = TRUE), "Sector"] <- "HEALTHCARE"
+
+salaries_g[grep("science|biology|eng|biologist|engineer|automotive| metal|ngr|technician", salaries_g$JobTitle, ignore.case = TRUE), "Sector"] <- "STEM"
+
+salaries_g[grep("training|teacher|exam|trainer|TRAINEE", salaries_g$JobTitle, ignore.case = TRUE), "Sector"] <- "EDUCATION"
+
+salaries_g[grep("mta|transit|airport|captain", salaries_g$JobTitle, ignore.case = TRUE), "Sector"] <- "TRANSPORTATION"
+
+salaries_g[grep("clerk|retail|cashier|store|customer|purchaser|patrol", salaries_g$JobTitle, ignore.case = TRUE), "Sector"] <- "RETAIL"
+
+salaries_g[grep("architect|estate|contract|cement|real prop", salaries_g$JobTitle, ignore.case = TRUE), "Sector"] <- "REAL ESTATE"
+
+salaries_g[grep("tourism|sport|speaker|dj|vj|journalist|designer|art|media|cook|
+chef|barber|painter|carpenter|photographer|animal keeper|marketing |repairer|plumber|housekeeper|baker|curator| animal|machinist|roofer|gardener|commissioner|crafts|electrical|windowcleaner|worker|driver|repair|electrician|glazier|wire|
+communications|communication|planner| wharfinger|cement mason", salaries_g$JobTitle, ignore.case = TRUE), "Sector"] <- "SERVICES"
+
+salaries_g[grep("energy", salaries_g$JobTitle, ignore.case = TRUE), "Sector"] <- "ENERGY"
+
+salaries_g[grep("fire|firefighter|asphalt plant supervisor|mayor|govrnmt|affairs|museum|librarian|public|parking control officer|duty|street signs|water|city planning|asphalt|counselor|Marriage|PUBLIC SERVICE|TRAFFIC HEARING|cfdntal|TRAFFIC HEARING|PARK SECTION|child| municipal|attorney|METER READER", salaries_g$JobTitle, ignore.case = TRUE), "Sector"] <- "PUBLIC SERVICES"
+
+salaries_g[grep("management|consultant|manager|admin|board of supervisors|secretary|assistant|asst|auditor|analyst|chief investment officer|director|accountant|account|board|dept head|dep dir| payroll",salaries_g$JobTitle, ignore.case = TRUE), "Sector"] <- "WHITE COLLAR "
+
+salaries_g$Sector2 <- as.factor(salaries_g$Sector)
+
+str(salaries_g)
+summary(salaries_g)
+```
+# Found Is Not Set Fields
+```{r}
+x <- salaries_g %>% select(JobTitle,Sector) %>% filter(is.na(Sector)) %>% unique() %>% select(JobTitle)
+```
+#Salaries Summary by Gender (Removing N/A)
+```{r}
+salaries_g2 <- filter(salaries_g, TotalPayBenefits >0, !is.na(gender))
+summary(salaries_g2$gender)
+by(salaries_g2$TotalPayBenefits,salaries_g2$gender,summary)
+qplot(x=gender, y=TotalPayBenefits, data=salaries_g2, geom='boxplot') 
+```
+
+
+#Salaries Summary by Managerial Level via Gender
+```{r}
+salaries_g2 <- salaries_g2 %>% 
+mutate(JobTitle = tolower(JobTitle)) %>% 
+  mutate(Leaders = ifelse(grepl("supervisor|manager|chief|head|mayor|director", JobTitle), "Leaders", "Team_Members")) %>%
+  mutate(Leaders = as.factor(ifelse(grepl("assistant", JobTitle), "Team_Members", "Leaders")))
+
+ggplot(salaries_g2, aes( x = Leaders, fill = gender)) + 
+  geom_bar(position = "fill") + 
+  scale_y_continuous(labels = scales::percent, breaks=seq(0,1,0.10)) + 
+  labs(x="Managerial Level", y="Ratio", fill ="Gender", title = "General male/female ratio") + 
+  theme_grey()
+  ```
+#Salary Brackets (0-50K-100K-150K-200K)
+```{r}
+salaries_g2 <- salaries_g2 %>%
+  mutate(SalaryGroup = as.factor(ifelse(TotalPayBenefits < 50000, "< 50,000", 
+                ifelse(TotalPayBenefits < 100000, "50,000 - 100,000", 
+                ifelse(TotalPayBenefits < 150000, "100,000 - 150,000", 
+                ifelse(TotalPayBenefits < 200000, "150,000 - 200,000", ">200,000"))))))
+levels(salaries_g2$SalaryGroup) <- c("< 50,000", "50,000 - 100,000", "100,000 - 150,000", "150,000 - 200,000", ">200,000") 
+
+ggplot(salaries_g2, aes( x = Leaders, fill = SalaryGroup)) + 
+  geom_bar(position = "fill") + 
+  scale_y_continuous(labels = scales::percent, breaks=seq(0,1,0.10)) + 
+  labs(x="Managerial Level", y="Ratio", fill ="Salary group", title = "Salary groups ratio on different managerial levels") + 
+  theme_grey()
+```
+
+#Salaries Summary by Sector and histogram
+```{r}
+by(salaries_g2$TotalPayBenefits,salaries_g2$Sector2,summary)
+qplot(x=Sector2, y=TotalPayBenefits, data=salaries_g2, geom='boxplot') 
+qplot(x=Sector2, data=salaries_g2,bins=1000,fill=I("yellow"), col=I("blue"))
+qplot(x=Year, data=salaries_g2,fill=I("yellow"), col=I("blue"))
+ggplot(aes(x=TotalPayBenefits),data=salaries_g2) + geom_histogram()
+```
+
+#Fantastic Graph for Common jobs in Top (80%) and Bottom(20%) quartile of TotalPayBenefits
+```{r}
+Q80=salaries_g2%>%
+  filter(TotalPayBenefits>=quantile(TotalPayBenefits,0.80))
+
+jobcorpus <- Corpus(VectorSource(Q80$JobTitle))
+jobcorpus <- tm_map(jobcorpus, PlainTextDocument)
+jobcorpus <- tm_map(jobcorpus, removePunctuation)
+jobcorpus <- tm_map(jobcorpus, removeWords, stopwords('english'))
+wordcloud(jobcorpus, max.words = 100, random.order = FALSE,colors=brewer.pal(8, 'Dark2'))
+
+Q20=salaries_g2%>%
+  filter(TotalPayBenefits<=quantile(TotalPayBenefits,0.20))
+jobcorpus <- Corpus(VectorSource(Q20$JobTitle))
+jobcorpus <- tm_map(jobcorpus, PlainTextDocument)
+jobcorpus <- tm_map(jobcorpus, removePunctuation)
+jobcorpus <- tm_map(jobcorpus, removeWords, stopwords('english'))
+wordcloud(jobcorpus, max.words = 100, random.order = FALSE,colors=brewer.pal(8, 'Dark2'))
+```
+
+# Sector and Benefits
+
+salaries_g3 = subset(salaries_g2, !is.na(Sector2))
+
+ggplot(data = salaries_g3, aes( x = Sector2, fill = SalaryGroup)) + 
+  geom_bar(position = "fill") + 
+  scale_y_continuous(labels = scales::percent, breaks=seq(0,1,0.10)) + 
+  labs(x="Sector2", y="Ratio", fill ="Salary Group", title = "Sectoral Benefits") + 
+  theme_grey()
+
+
+# Sector and Gender
+
+#salaries_g3 = subset(salaries_g2, !is.na(Sector2))
+
+ggplot(data = salaries_g3, aes( x = Sector2, fill = gender)) + 
+  geom_bar(position = "fill") + 
+  scale_y_continuous(labels = scales::percent, breaks=seq(0,1,0.10)) + 
+  labs(x="Sector2", y="Ratio", fill ="Gender", title = "Sectoral") + 
+  theme_grey()
+
+
+#Salaries Summary by Gender (Removing N/A)
+```{r}
+salaries_g4 <- filter(salaries_g3, TotalPayBenefits>0, !is.na(gender))
+summary(salaries_g4$Sector2)
+by(salaries_g4$TotalPayBenefits,salaries_g4$gender,summary)
+qplot(x=Sector2, y=TotalPayBenefits, data=salaries_g4, geom='boxplot') 
++ scale_y_log10()
+```
