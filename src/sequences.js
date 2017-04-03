@@ -1,5 +1,10 @@
 // https://www.materialui.co/colors
 
+Number.prototype.format = function(n, x) {
+    var re = '\\d(?=(\\d{' + (x || 3) + '})+' + (n > 0 ? '\\.' : '$') + ')';
+    return this.toFixed(Math.max(0, ~~n)).replace(new RegExp(re, 'g'), '$&,');
+};
+
 // Dimensions of sunburst.
 var width = 750;
 var height = 600;
@@ -79,7 +84,7 @@ var titles = {
   "publicservices": "Public Services"
 }
 
-makeLegend();
+var totalSizeList = {};
 
 function makeVisualization(selector, csvFilename) {
 
@@ -149,6 +154,7 @@ function makeVisualization(selector, csvFilename) {
 
     // Get total size of the tree = value of root node from partition.
     totalSize = path.node().__data__.value;
+    totalSizeList[selector] = totalSize;
    }
 
    // Fade all but the current sequence, and show it in the breadcrumb trail.
@@ -159,10 +165,16 @@ function makeVisualization(selector, csvFilename) {
        percentageString = "< 0.1%";
      }
 
+     var sizeString = d.value.format() + " / <small>" + totalSize.format() + "</small>";
+
      d3.select(selector + " .percentage")
          .text(percentageString);
 
-         $(selector + " .sentence").html(makeSentence(d));
+     d3.select(selector + " .size")
+         .html(sizeString);
+
+
+     $(selector + " .sentence").html(makeSentence(d));
 
      d3.select(selector + " .explanation")
          .style("visibility", "");
@@ -180,6 +192,8 @@ function makeVisualization(selector, csvFilename) {
      // Then highlight only those that are an ancestor of the current segment.
      vis.selectAll("path")
          .filter(function(node) {
+           //console.log(sequenceArray);
+           //console.log(node);
                    return (sequenceArray.indexOf(node) >= 0);
                  })
          .style("opacity", 1);
@@ -197,8 +211,8 @@ function makeVisualization(selector, csvFilename) {
 
      // Transition each segment to full opacity and then reactivate it.
      vis.selectAll("path")
-         .transition()
-         .duration(1000)
+        .transition()
+        // .duration(500)
          .style("opacity", 1)
          .each("end", function() {
                  d3.select(this).on("mouseover", mouseover);
@@ -387,6 +401,11 @@ function makeVisualization(selector, csvFilename) {
    };
 }
 
+$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+  var selector = $(e.target).attr("href") // activated tab
+  makeLegend(selector);
+});
+
 function makeColorBox(keys, multiCode=false) {
   var str = ""
   for (var i = 0; i < keys.length; i++) {
@@ -394,20 +413,22 @@ function makeColorBox(keys, multiCode=false) {
 
     str += "<li>";
     if (multiCode) {
-      str += "<span class='box' style='background-color:"+colors["male-"+key][0]+"'></span>";
-      str += "<span class='box' style='background-color:"+colors["female-"+key][0]+"'></span>";
+      str += "<span class='box item' style='background-color:"+colors["male-"+key][0]+"' data-item='"+key+"'></span>";
+      str += "<span class='box item' style='background-color:"+colors["female-"+key][0]+"' data-item='"+key+"'></span>";
     } else {
-      str += "<span class='box' style='background-color:"+colors[key][0]+"'></span>";
+      str += "<span class='box item' style='background-color:"+colors[key][0]+"' data-item='"+key+"'></span>";
     }
 
-    str += "<span class='title'>"+titles[key]+"</span>";
+    str += "<span class='title item' data-item='"+key+"'>"+titles[key]+"</span>";
     str += "</li>";
   }
 
   return "<ul class='legend'>"+str+"</ul>"
 }
 
-function makeLegend() {
+
+function makeLegend(selector) {
+  var totalSize = totalSizeList[selector];
   var gender = makeColorBox(legends.gender);
   var salary  = makeColorBox(legends.salary, true);
   var sector = makeColorBox(legends.sector, true);
@@ -415,4 +436,61 @@ function makeLegend() {
   $("#sidebar .salary").html(salary);
   $("#sidebar .sector").html(sector);
 
-}
+  $(".legend .item").on("mouseover", function(e) {
+    $(e.target).parent("li").addClass("selected");
+    var key = $(e.target).attr("data-item");
+    // console.log($(i).attr("data-item"))
+    // Fade all the segments.
+    if (key == undefined || key == null || key.length > 0) {
+      var a = d3.selectAll(selector+" path").style("opacity", 0.3).filter(function(node) {
+        return (node.name == key);
+      })[0];
+
+      var totalLegend = 0;
+      for (var i = 0; i < a.length; i++) {
+        if (a[i].__data__ !== undefined) {
+          var d = a[i].__data__;
+          totalLegend += parseInt(d.value, 10);
+        }
+      }
+
+      var percentage = (100 * totalLegend / totalSize).toPrecision(3);
+      var percentageString = percentage + "%";
+      if (percentage < 0.1) {
+        percentageString = "< 0.1%";
+      }
+
+      var sizeString = totalLegend.format() + " / <small>" + totalSize.format() + "</small>";
+
+      d3.select(selector + " .percentage")
+          .text(percentageString);
+
+      d3.select(selector + " .size")
+          .html(sizeString);
+
+
+      $(selector + " .sentence").html(titles[d.name]);
+
+      d3.select(selector + " .explanation")
+          .style("visibility", "");
+
+      d3.select(selector + " .description")
+          .style("visibility", "hidden");
+
+      d3.selectAll(selector+" path").style("opacity", 0.3).filter(function(node) {
+        return (node.name == key);
+      }).style("opacity", 1).style("border", "1px solid black");
+    }
+
+  });
+  $(".legend .item").on("mouseleave", function(e) {
+    $(e.target).parent("li").removeClass("selected");
+    d3.selectAll(selector+" path").style("opacity", 1);
+
+    d3.select(selector + " .explanation")
+        .style("visibility", "hidden");
+
+    d3.select(selector + " .description")
+        .style("visibility", "");
+  });
+};

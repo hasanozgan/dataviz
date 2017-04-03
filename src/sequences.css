@@ -40,11 +40,24 @@ ul.legend li {
   height: 20px;
 }
 
+ul.legend li.selected {
+  font-weight: bold;
+}
+
+ul.legend li.selected .box {
+    border: 1px solid #dedede;
+    outline: 1px solid #dedede;
+    width: 15px;
+    height: 15px;
+}
+
+
 .legend .box {
   display: inline-block;
   width: 15px;
   height: 15px;
-  border: 1px solid #dedede;
+  border: 1px solid #fff;
+  outline: 1px solid #fff;
   margin-top: 3px;
 }
 
@@ -122,6 +135,14 @@ ul.legend li {
 
 .percentage {
   font-size: 2.5em;
+}
+
+.size {
+  font-size: 1.4em;
+}
+
+.size small {
+  font-size: 0.8em;
 }
 
 .nav-tabs > li, .nav-pills > li {

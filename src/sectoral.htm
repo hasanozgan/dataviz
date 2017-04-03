@@ -24,12 +24,13 @@
           <div class="sequence"></div>
           <div class="chart">
             <div class="explanation" style="visibility: hidden;">
+              <span class="size"></span><br/>
               <span class="percentage"></span><br/>
               <span class="sentence"></span>
             </div>
             <div class="description">
               <span class="title">Gender Pay Gap by Sector</span>
-              <span class="order sectoral">Sectoral</span>
+              <span class="order">Sectoral</span>
             </div>
           </div>
 
@@ -38,13 +39,14 @@
           <div class="sequence"></div>
           <div class="chart">
             <div class="explanation" style="visibility: hidden;">
+              <span class="size"></span><br/>
               <span class="percentage"></span><br/>
               <span class="sentence"></span>
             </div>
             <div class="description">
               <span class="year">2011</span>
               <span class="title">Gender Pay Gap by Sector</span>
-              <span class="order sectoral">Sectoral</span>
+              <span class="order">Sectoral</span>
             </div>
           </div>
         </div>
@@ -52,13 +54,14 @@
           <div class="sequence"></div>
           <div class="chart">
             <div class="explanation" style="visibility: hidden;">
+              <span class="size"></span><br/>
               <span class="percentage"></span><br/>
               <span class="sentence"></span>
             </div>
             <div class="description">
               <span class="year">2012</span>
               <span class="title">Gender Pay Gap by Sector</span>
-              <span class="order sectoral">Sectoral</span>
+              <span class="order">Sectoral</span>
             </div>
           </div>
         </div>
@@ -66,13 +69,14 @@
           <div class="sequence"></div>
           <div class="chart">
             <div class="explanation" style="visibility: hidden;">
+              <span class="size"></span><br/>
               <span class="percentage"></span><br/>
               <span class="sentence"></span>
             </div>
             <div class="description">
               <span class="year">2013</span>
               <span class="title">Gender Pay Gap by Sector</span>
-              <span class="order sectoral">Sectoral</span>
+              <span class="order">Sectoral</span>
             </div>
           </div>
         </div>
@@ -80,42 +84,38 @@
           <div class="sequence"></div>
           <div class="chart">
             <div class="explanation" style="visibility: hidden;">
+              <span class="size"></span><br/>
               <span class="percentage"></span><br/>
               <span class="sentence"></span>
             </div>
             <div class="description">
               <span class="year">2014</span>
               <span class="title">Gender Pay Gap by Sector</span>
-              <span class="order sectoral">Sectoral</span>
+              <span class="order">Sectoral</span>
             </div>
           </div>
         </div>
       </div>
 
+
       <div class="container" style="margin-left:10px;">
         <div class="row">
           <div class="col">
-            <a href="index.htm">Change Order as Salary Group</a>
+            <a href="index.htm">Change Order as Salary Group</a><br/>
+            <a href="https://www.kaggle.com/hasanozgan/d/kaggle/sf-salaries/gender-pay-gap-by-sector"  target="#_blank" style="color:gray">Data Source: https://www.kaggle.com/hasanozgan/d/kaggle/sf-salaries/gender-pay-gap-by-sector</a>
           </div>
         </div>
       </div>
     </div>
     <div id="sidebar">
       <h6>Gender</h6>
-      <div class="gender">
-
-      </div>
+      <div class="gender"></div>
 
       <h6>Salary Group</h6>
-      <div class="salary">
-
-      </div>
+      <div class="salary"></div>
 
       <h6>Sectors</h6>
-      <div class="sector">
-
-      </div>
-
+      <div class="sector"></div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
@@ -128,6 +128,9 @@
       makeVisualization("#year2012", "data/gender_sector_salary_2012.csv");
       makeVisualization("#year2013", "data/gender_sector_salary_2013.csv");
       makeVisualization("#year2014", "data/gender_sector_salary_2014.csv");
+      $(document).ready(function(){
+        makeLegend("#all");
+      })
     </script>
   </body>
 </html>
