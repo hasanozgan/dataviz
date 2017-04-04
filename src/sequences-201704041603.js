@@ -78,16 +78,16 @@ var colors = {
 };
 
 var jobtitles = {
-  "healthcare": "Doctor|Nurs|Anesth|Epidemiologist|Psychologist|Nutritionist|Chemist|Emergency Med|Pathologist|Health|Hlth|Therapist|Hospital|Imaging|Physician|Orthopedic|Pharm|Dental|Dentist|Medical|Acupunturist|Radiologic|Audiometrist|Emergency|Med|Audiologist|Psychiatric",
-  "education": "Training|Teacher|Exam|Trainer|Trainee",
-  "stem": "Science|Biology|Eng|Biologist|Eengineer|Automotive| metal|Ngr|Technician",
-  "retail": "Clerk|Retail|Cashier|Store|Customer|Purchaser|Patrol",
-  "transportation": "MTA|Transit|Airport|Captain",
-  "lawnsecurity": "Police|Sherif|Probation|Sergeant|Investigator|Guard|Security|Custodian|Lawyer|Judge|Criminalist|Criminal|Court",
-  "realestate": "Architect|Estate|Contract|Cement|Real Prop",
-  "services": "Tourism|Sport|Speaker|DJ|VJ|Journalist|Designer|Art|Media|Cook|Chef|Barber|Painter|Carpenter|Photographer|Animal Keeper|Marketing |Repairer|Plumber|Housekeeper|Baker|Curator|Animal|Machinist|Roofer|Gardener|Commissioner|Crafts|Electrical|Windowcleaner|Worker|Driver|Repair|Electrician|Glazier|Wire|Communications|Communication|Planner|Wharfinger|Cement Mason",
-  "whitecolar": "Management|Consultant|Manager|Admin|Board of Supervisors|Secretary|Assistant|Asst|Auditor|Analyst|Chief Investment Officer|Director|Accountant|Account|Board|Dept Head|Dep Dir|Payroll",
-  "publicservices": "Fire|Firefighter|Asphalt Plant Supervisor|Mayor|Govrnmt|Affairs|Museum|Librarian|Public|Parking Control Officer|Duty|Street Signs|Water|City Planning|Asphalt|Counselor|Marriage|Public Service|Traffic Hearing|Cfdntal|Park Section|Child|Municipal|Attorney|Meter Reader",
+  "healthcare": "Doctor, Nurs, Anesth, Epidemiologist, Psychologist, Nutritionist, Chemist, Emergency Med, Pathologist, Health, Hlth, Therapist, Hospital, Imaging, Physician, Orthopedic, Pharm, Dental, Dentist, Medical, Acupunturist, Radiologic, Audiometrist, Emergency, Med, Audiologist, Psychiatric",
+  "education": "Training, Teacher, Exam, Trainer, Trainee",
+  "stem": "Science, Biology, Eng, Biologist, Eengineer, Automotive,  metal, Ngr, Technician",
+  "retail": "Clerk, Retail, Cashier, Store, Customer, Purchaser, Patrol",
+  "transportation": "MTA, Transit, Airport, Captain",
+  "lawnsecurity": "Police, Sherif, Probation, Sergeant, Investigator, Guard, Security, Custodian, Lawyer, Judge, Criminalist, Criminal, Court",
+  "realestate": "Architect, Estate, Contract, Cement, Real Prop",
+  "services": "Tourism, Sport, Speaker, DJ, VJ, Journalist, Designer, Art, Media, Cook, Chef, Barber, Painter, Carpenter, Photographer, Animal Keeper, Marketing , Repairer, Plumber, Housekeeper, Baker, Curator, Animal, Machinist, Roofer, Gardener, Commissioner, Crafts, Electrical, Windowcleaner, Worker, Driver, Repair, Electrician, Glazier, Wire, Communications, Communication, Planner, Wharfinger, Cement Mason",
+  "whitecolar": "Management, Consultant, Manager, Admin, Board of Supervisors, Secretary, Assistant, Asst, Auditor, Analyst, Chief Investment Officer, Director, Accountant, Account, Board, Dept Head, Dep Dir, Payroll",
+  "publicservices": "Fire, Firefighter, Asphalt Plant Supervisor, Mayor, Govrnmt, Affairs, Museum, Librarian, Public, Parking Control Officer, Duty, Street Signs, Water, City Planning, Asphalt, Counselor, Marriage, Public Service, Traffic Hearing, Cfdntal, Park Section, Child, Municipal, Attorney, Meter Reader",
 }
 
 var legends = {
@@ -125,6 +125,7 @@ function makeVisualization(selector, csvFilename) {
   $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
     var selector = $(e.target).attr("href") // activated tab
     makeLegend(selector);
+    $('[data-toggle="popover"]').popover({ trigger: "hover" });
   });
 
   $(document).ready(function() {
@@ -526,8 +527,7 @@ function makeColorBox(name, keys, multiCode=false, popoverContents=null) {
     str += "<li>";
     if (popoverContents != undefined && popoverContents != null) {
       var title = titles[key];
-      var contents = popoverContents[key].replaceAll("|", ", ");
-      str += "<span data-toggle='popover' title='Job Titles ("+ title +")' data-html='true' data-content='"+ contents +"'>";
+      str += "<span data-toggle='popover' title='Job Titles ("+ title +")' data-content='"+ popoverContents[key] +"'>";
     }
     if (multiCode) {
       str += "<span class='box item' style='background-color:"+colors["male-"+key][0]+"' data-item='"+key+"'></span>";
