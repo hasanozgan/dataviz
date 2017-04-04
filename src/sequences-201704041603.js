@@ -128,11 +128,6 @@ function makeVisualization(selector, csvFilename) {
     $('[data-toggle="popover"]').popover({ trigger: "hover" });
   });
 
-  $(document).ready(function() {
-    makeLegend("#all");
-  });
-
-
   // Total size of all segments; we set this later, after loading the data.
   var totalSize = 0;
 
@@ -161,6 +156,9 @@ function makeVisualization(selector, csvFilename) {
     createVisualization(json);
   });
 
+  $(document).ready(function() {
+    makeLegend("#all");
+  });
 
   // Main function to draw and set up the visualization, once we have the data.
   function createVisualization(json) {
