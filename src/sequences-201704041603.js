@@ -1,6 +1,6 @@
 // https://www.materialui.co/colors
 
-Number.prototype.format function(n, x) {
+Number.prototype.format = function(n, x) {
     var re = '\\d(?=(\\d{' + (x || 3) + '})+' + (n > 0 ? '\\.' : '$') + ')';
     return this.toFixed(Math.max(0, ~~n)).replace(new RegExp(re, 'g'), '$&,');
 };
@@ -485,7 +485,7 @@ function makeVisualization(selector, csvFilename) {
          if (totalSize != undefined && totalSize > 0) {
            sizeString = totalLegend.format() + " / <small>" + totalSize.format() + "</small>";
          }
-         
+
          d3.select(selector + " .percentage")
              .text(percentageString);
 
