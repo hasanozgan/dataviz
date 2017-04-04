@@ -453,7 +453,7 @@ function makeVisualization(selector, csvFilename) {
      $("#sidebar .sector").html(sector);
 
      $(".legend .item").on("mouseover", function(e) {
-       $(e.target).parent("li").addClass("selected");
+       $(e.target).parents("li").addClass("selected");
        var key = $(e.target).attr("data-item");
        // Fade all the segments.
        if (key == undefined || key == null || key.length > 0) {
@@ -506,7 +506,7 @@ function makeVisualization(selector, csvFilename) {
      });
 
      $(".legend .item").on("mouseleave", function(e) {
-       $(e.target).parent("ul").removeClass("selected");
+       $(e.target).parents("li").removeClass("selected");
        d3.selectAll(selector+" path").style("opacity", 1);
 
        d3.select(selector + " .explanation")
