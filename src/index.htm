@@ -110,7 +110,7 @@
       <h6>Gender</h6>
       <div class="gender"></div>
 
-      <h6>Salary Group</h6>
+      <h6>Salary Groups</h6>
       <div class="salary"></div>
 
       <h6>Sectors</h6>
@@ -127,8 +127,8 @@
       makeVisualization("#year2012", "data/gender_salary_sector_2012.csv");
       makeVisualization("#year2013", "data/gender_salary_sector_2013.csv");
       makeVisualization("#year2014", "data/gender_salary_sector_2014.csv");
-      $(document).ready(function(){
-        makeLegend("#all");
+      $(document).ready(function(){        
+        $('[data-toggle="popover"]').popover({ trigger: "hover" });
       })
     </script>
   </body>

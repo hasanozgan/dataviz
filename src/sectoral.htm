@@ -30,7 +30,7 @@
             </div>
             <div class="description">
               <span class="title">Gender Pay Gap by Sector</span>
-              <span class="order">Sectoral</span>
+              <span class="order sectoral">Sectoral</span>
             </div>
           </div>
 
@@ -46,7 +46,7 @@
             <div class="description">
               <span class="year">2011</span>
               <span class="title">Gender Pay Gap by Sector</span>
-              <span class="order">Sectoral</span>
+              <span class="order sectoral">Sectoral</span>
             </div>
           </div>
         </div>
@@ -61,7 +61,7 @@
             <div class="description">
               <span class="year">2012</span>
               <span class="title">Gender Pay Gap by Sector</span>
-              <span class="order">Sectoral</span>
+              <span class="order sectoral">Sectoral</span>
             </div>
           </div>
         </div>
@@ -76,7 +76,7 @@
             <div class="description">
               <span class="year">2013</span>
               <span class="title">Gender Pay Gap by Sector</span>
-              <span class="order">Sectoral</span>
+              <span class="order sectoral">Sectoral</span>
             </div>
           </div>
         </div>
@@ -91,7 +91,7 @@
             <div class="description">
               <span class="year">2014</span>
               <span class="title">Gender Pay Gap by Sector</span>
-              <span class="order">Sectoral</span>
+              <span class="order sectoral">Sectoral</span>
             </div>
           </div>
         </div>
@@ -111,7 +111,7 @@
       <h6>Gender</h6>
       <div class="gender"></div>
 
-      <h6>Salary Group</h6>
+      <h6>Salary Groups</h6>
       <div class="salary"></div>
 
       <h6>Sectors</h6>
@@ -129,7 +129,7 @@
       makeVisualization("#year2013", "data/gender_sector_salary_2013.csv");
       makeVisualization("#year2014", "data/gender_sector_salary_2014.csv");
       $(document).ready(function(){
-        makeLegend("#all");
+        $('[data-toggle="popover"]').popover({ trigger: "hover" });
       })
     </script>
   </body>

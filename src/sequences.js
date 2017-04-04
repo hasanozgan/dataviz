@@ -5,6 +5,11 @@ Number.prototype.format = function(n, x) {
     return this.toFixed(Math.max(0, ~~n)).replace(new RegExp(re, 'g'), '$&,');
 };
 
+String.prototype.replaceAll = function(search, replacement) {
+    var target = this;
+    return target.split(search).join(replacement);
+};
+
 // Dimensions of sunburst.
 var width = 750;
 var height = 600;
@@ -19,6 +24,23 @@ var b = {
 var colors = {
   "male": ["#1565C0", "#FFFFFF"],
   "female": ["#EF6C00", "#FFFFFF"],
+
+  "50": ["#64B5F6", "#FFFFFF"],
+  "100": ["#42A5F5", "#FFFFFF"],
+  "150": ["#2196F3", "#FFFFFF"],
+  "200": ["#1E88E5", "#FFFFFF"],
+  "1000": ["#1976D2", "#FFFFFF"],
+
+  "healthcare": ["#0277BD", "#FFFFFF"], // 800
+  "education": ["#0288D1", "#FFFFFF"], // 700
+  "stem": ["#039BE5", "#FFFFFF"], // 600
+  "retail": ["#03A9F4", "#FFFFFF"], // 500
+  "transportation": ["#29B6F6", "#FFFFFF"], //400
+  "lawnsecurity": ["#4FC3F7", "#000000"], // 300
+  "realestate": ["#00B0FF", "#FFFFFF"], // A400
+  "services": ["#40C4FF", "#000000"], // A200
+  "whitecolar": ["#81D4FA", "#000000"], // 200
+  "publicservices": ["#80D8FF", "#000000"], // A100
 
   "male-50": ["#64B5F6", "#FFFFFF"],
   "male-100": ["#42A5F5", "#FFFFFF"],
@@ -43,7 +65,6 @@ var colors = {
   "male-whitecolar": ["#81D4FA", "#000000"], // 200
   "male-publicservices": ["#80D8FF", "#000000"], // A100
 
-
   "female-healthcare": ["#FF8F00", "#FFFFFF"],// 800
   "female-education": ["#FFA000", "#FFFFFF"],// 700
   "female-stem": ["#FFB300", "#000000"], //600
@@ -55,6 +76,19 @@ var colors = {
   "female-whitecolar": ["#FFE082", "#000000"],//200
   "female-publicservices": ["#FFE57F", "#000000"]//A100
 };
+
+var jobtitles = {
+  "healthcare": "Doctor|Nurs|Anesth|Epidemiologist|Psychologist|Nutritionist|Chemist|Emergency Med|Pathologist|Health|Hlth|Therapist|Hospital|Imaging|Physician|Orthopedic|Pharm|Dental|Dentist|Medical|Acupunturist|Radiologic|Audiometrist|Emergency|Med|Audiologist|Psychiatric",
+  "education": "Training|Teacher|Exam|Trainer|Trainee",
+  "stem": "Science|Biology|Eng|Biologist|Eengineer|Automotive| metal|Ngr|Technician",
+  "retail": "Clerk|Retail|Cashier|Store|Customer|Purchaser|Patrol",
+  "transportation": "MTA|Transit|Airport|Captain",
+  "lawnsecurity": "Police|Sherif|Probation|Sergeant|Investigator|Guard|Security|Custodian|Lawyer|Judge|Criminalist|Criminal|Court",
+  "realestate": "Architect|Estate|Contract|Cement|Real Prop",
+  "services": "Tourism|Sport|Speaker|DJ|VJ|Journalist|Designer|Art|Media|Cook|Chef|Barber|Painter|Carpenter|Photographer|Animal Keeper|Marketing |Repairer|Plumber|Housekeeper|Baker|Curator|Animal|Machinist|Roofer|Gardener|Commissioner|Crafts|Electrical|Windowcleaner|Worker|Driver|Repair|Electrician|Glazier|Wire|Communications|Communication|Planner|Wharfinger|Cement Mason",
+  "whitecolar": "Management|Consultant|Manager|Admin|Board of Supervisors|Secretary|Assistant|Asst|Auditor|Analyst|Chief Investment Officer|Director|Accountant|Account|Board|Dept Head|Dep Dir|Payroll",
+  "publicservices": "Fire|Firefighter|Asphalt Plant Supervisor|Mayor|Govrnmt|Affairs|Museum|Librarian|Public|Parking Control Officer|Duty|Street Signs|Water|City Planning|Asphalt|Counselor|Marriage|Public Service|Traffic Hearing|Cfdntal|Park Section|Child|Municipal|Attorney|Meter Reader",
+}
 
 var legends = {
   "gender": ["male", "female"],
@@ -87,6 +121,16 @@ var titles = {
 var totalSizeList = {};
 
 function makeVisualization(selector, csvFilename) {
+
+  $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+    var selector = $(e.target).attr("href") // activated tab
+    makeLegend(selector);
+  });
+
+  $(document).ready(function() {
+    makeLegend("#all");
+  });
+
 
   // Total size of all segments; we set this later, after loading the data.
   var totalSize = 0;
@@ -142,6 +186,7 @@ function makeVisualization(selector, csvFilename) {
         .attr("fill-rule", "evenodd")
         .style("fill", function(d) {
           type = makeType(d);
+
           if (type.length > 0) {
             return colors[type][0];
           }
@@ -192,8 +237,6 @@ function makeVisualization(selector, csvFilename) {
      // Then highlight only those that are an ancestor of the current segment.
      vis.selectAll("path")
          .filter(function(node) {
-           //console.log(sequenceArray);
-           //console.log(node);
                    return (sequenceArray.indexOf(node) >= 0);
                  })
          .style("opacity", 1);
@@ -399,19 +442,93 @@ function makeVisualization(selector, csvFilename) {
      }
      return root;
    };
+
+   function makeLegend(selector) {
+     var totalSize = totalSizeList[selector];
+     var gender = makeColorBox("Gender", legends.gender);
+     var salary  = makeColorBox("Salary Group", legends.salary, true);
+     var sector = makeColorBox("Sector", legends.sector, true, jobtitles);
+     $("#sidebar .gender").html(gender);
+     $("#sidebar .salary").html(salary);
+     $("#sidebar .sector").html(sector);
+
+     $(".legend .item").on("mouseover", function(e) {
+       $(e.target).parent("li").addClass("selected");
+       var key = $(e.target).attr("data-item");
+       // Fade all the segments.
+       if (key == undefined || key == null || key.length > 0) {
+         var a = d3.selectAll(selector+" path").style("opacity", 0.3).filter(function(node) {
+           return (node.name == key);
+         })[0];
+
+         var totalLegend = 0;
+         for (var i = 0; i < a.length; i++) {
+           if (a[i].__data__ !== undefined) {
+             var d = a[i].__data__;
+             totalLegend += parseInt(d.value, 10);
+           }
+         }
+
+         var d = a[0].__data__;
+        //  var sequenceArray = Array({name:d.name, depth:1, value:d.value, parent:{name:"root", depth:"0", value:0}});
+        //  updateBreadcrumbs(sequenceArray, percentageString);
+
+         var percentage = (100 * totalLegend / totalSize).toPrecision(3);
+         var percentageString = percentage + "%";
+         if (percentage < 0.1) {
+           percentageString = "< 0.1%";
+         }
+
+         var sizeString = totalLegend.format() + " / <small>" + totalSize.format() + "</small>";
+
+         d3.select(selector + " .percentage")
+             .text(percentageString);
+
+         d3.select(selector + " .size")
+             .html(sizeString);
+
+         var legendName = $(e.target).parents("ul.legend").attr("data-name");
+
+         $(selector + " .sentence").html("<strong style='font-size:1.3em'>"+legendName+"</strong><br/>"+titles[d.name]);
+
+         d3.select(selector + " .explanation")
+             .style("visibility", "");
+
+         d3.select(selector + " .description")
+             .style("visibility", "hidden");
+
+         d3.selectAll(selector+" path").style("opacity", 0.3).filter(function(node) {
+           return (node.name == key);
+         }).style("opacity", 1).style("border", "1px solid black");
+
+
+       }
+     });
+
+     $(".legend .item").on("mouseleave", function(e) {
+       $(e.target).parent("ul").removeClass("selected");
+       d3.selectAll(selector+" path").style("opacity", 1);
+
+       d3.select(selector + " .explanation")
+           .style("visibility", "hidden");
+
+       d3.select(selector + " .description")
+           .style("visibility", "");
+     });
+   };
 }
 
-$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-  var selector = $(e.target).attr("href") // activated tab
-  makeLegend(selector);
-});
-
-function makeColorBox(keys, multiCode=false) {
+function makeColorBox(name, keys, multiCode=false, popoverContents=null) {
   var str = ""
   for (var i = 0; i < keys.length; i++) {
     var key = keys[i];
 
     str += "<li>";
+    if (popoverContents != undefined && popoverContents != null) {
+      var title = titles[key];
+      var contents = popoverContents[key].replaceAll("|", ", ");
+      str += "<span data-toggle='popover' title='Job Titles ("+ title +")' data-html='true' data-content='"+ contents +"'>";
+    }
     if (multiCode) {
       str += "<span class='box item' style='background-color:"+colors["male-"+key][0]+"' data-item='"+key+"'></span>";
       str += "<span class='box item' style='background-color:"+colors["female-"+key][0]+"' data-item='"+key+"'></span>";
@@ -420,77 +537,11 @@ function makeColorBox(keys, multiCode=false) {
     }
 
     str += "<span class='title item' data-item='"+key+"'>"+titles[key]+"</span>";
+    if (popoverContents != undefined && popoverContents != null) {
+      str += "</span>";
+    }
     str += "</li>";
   }
 
-  return "<ul class='legend'>"+str+"</ul>"
+  return "<ul class='legend' data-name='"+name+"'>"+str+"</ul>"
 }
-
-
-function makeLegend(selector) {
-  var totalSize = totalSizeList[selector];
-  var gender = makeColorBox(legends.gender);
-  var salary  = makeColorBox(legends.salary, true);
-  var sector = makeColorBox(legends.sector, true);
-  $("#sidebar .gender").html(gender);
-  $("#sidebar .salary").html(salary);
-  $("#sidebar .sector").html(sector);
-
-  $(".legend .item").on("mouseover", function(e) {
-    $(e.target).parent("li").addClass("selected");
-    var key = $(e.target).attr("data-item");
-    // console.log($(i).attr("data-item"))
-    // Fade all the segments.
-    if (key == undefined || key == null || key.length > 0) {
-      var a = d3.selectAll(selector+" path").style("opacity", 0.3).filter(function(node) {
-        return (node.name == key);
-      })[0];
-
-      var totalLegend = 0;
-      for (var i = 0; i < a.length; i++) {
-        if (a[i].__data__ !== undefined) {
-          var d = a[i].__data__;
-          totalLegend += parseInt(d.value, 10);
-        }
-      }
-
-      var percentage = (100 * totalLegend / totalSize).toPrecision(3);
-      var percentageString = percentage + "%";
-      if (percentage < 0.1) {
-        percentageString = "< 0.1%";
-      }
-
-      var sizeString = totalLegend.format() + " / <small>" + totalSize.format() + "</small>";
-
-      d3.select(selector + " .percentage")
-          .text(percentageString);
-
-      d3.select(selector + " .size")
-          .html(sizeString);
-
-
-      $(selector + " .sentence").html(titles[d.name]);
-
-      d3.select(selector + " .explanation")
-          .style("visibility", "");
-
-      d3.select(selector + " .description")
-          .style("visibility", "hidden");
-
-      d3.selectAll(selector+" path").style("opacity", 0.3).filter(function(node) {
-        return (node.name == key);
-      }).style("opacity", 1).style("border", "1px solid black");
-    }
-
-  });
-  $(".legend .item").on("mouseleave", function(e) {
-    $(e.target).parent("li").removeClass("selected");
-    d3.selectAll(selector+" path").style("opacity", 1);
-
-    d3.select(selector + " .explanation")
-        .style("visibility", "hidden");
-
-    d3.select(selector + " .description")
-        .style("visibility", "");
-  });
-};
