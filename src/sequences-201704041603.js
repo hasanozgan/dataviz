@@ -120,7 +120,7 @@ var titles = {
 
 var totalSizeList = {};
 
-function makeVisualization(selector, csvFilename) {
+function makeVisualization(selector, csvFilename, sectoral_b = false) {
 
   $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
     var selector = $(e.target).attr("href") // activated tab
@@ -222,8 +222,15 @@ function makeVisualization(selector, csvFilename) {
      d3.select(selector + " .size")
          .html(sizeString);
 
+     if (d.depth == 1) {
+       legendName = "Gender";
+     } else if (d.depth == 2) {
+       legendName = (sectoral_b ? "Sector" :  "Salary Group");
+     } else if (d.depth == 3) {
+       legendName = (sectoral_b ? "Salary Group" : "Sector");
+     }
 
-     $(selector + " .sentence").html(makeSentence(d));
+     $(selector + " .sentence").html(legendName+"<br/><strong style='font-size:1.4em'>"+titles[d.name]+"</strong>");
 
      d3.select(selector + " .explanation")
          .style("visibility", "");
@@ -496,7 +503,7 @@ function makeVisualization(selector, csvFilename) {
 
          var legendName = $(e.target).parents("ul.legend").attr("data-name");
 
-         $(selector + " .sentence").html("<strong style='font-size:1.3em'>"+legendName+"</strong><br/>"+titles[d.name]);
+         $(selector + " .sentence").html(legendName+"<br/><strong style='font-size:1.4em'>"+titles[d.name]+"</strong>");
 
          d3.select(selector + " .explanation")
              .style("visibility", "");
