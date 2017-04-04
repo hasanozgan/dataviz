@@ -157,6 +157,7 @@ function makeVisualization(selector, csvFilename) {
 
     $(document).ready(function() {
       makeLegend("#all");
+      $('[data-toggle="popover"]').popover({ trigger: "hover" });
     });
   });
 
@@ -201,6 +202,7 @@ function makeVisualization(selector, csvFilename) {
     totalSizeList[selector] = totalSize;
     $(document).ready(function() {
       makeLegend("#all");
+      $('[data-toggle="popover"]').popover({ trigger: "hover" });
     });
    }
 
