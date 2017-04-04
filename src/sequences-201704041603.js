@@ -1,6 +1,6 @@
 // https://www.materialui.co/colors
 
-Number.prototype.format = function(n, x) {
+Number.prototype.format function(n, x) {
     var re = '\\d(?=(\\d{' + (x || 3) + '})+' + (n > 0 ? '\\.' : '$') + ')';
     return this.toFixed(Math.max(0, ~~n)).replace(new RegExp(re, 'g'), '$&,');
 };
@@ -154,10 +154,10 @@ function makeVisualization(selector, csvFilename) {
     var csv = d3.csv.parseRows(text);
     var json = buildHierarchy(csv);
     createVisualization(json);
-  });
 
-  $(document).ready(function() {
-    makeLegend("#all");
+    $(document).ready(function() {
+      makeLegend("#all");
+    });
   });
 
   // Main function to draw and set up the visualization, once we have the data.
@@ -199,6 +199,9 @@ function makeVisualization(selector, csvFilename) {
     // Get total size of the tree = value of root node from partition.
     totalSize = path.node().__data__.value;
     totalSizeList[selector] = totalSize;
+    $(document).ready(function() {
+      makeLegend("#all");
+    });
    }
 
    // Fade all but the current sequence, and show it in the breadcrumb trail.
@@ -478,8 +481,11 @@ function makeVisualization(selector, csvFilename) {
            percentageString = "< 0.1%";
          }
 
-         var sizeString = totalLegend.format() + " / <small>" + totalSize.format() + "</small>";
-
+         sizeString = "";
+         if (totalSize != undefined && totalSize > 0) {
+           sizeString = totalLegend.format() + " / <small>" + totalSize.format() + "</small>";
+         }
+         
          d3.select(selector + " .percentage")
              .text(percentageString);
 
