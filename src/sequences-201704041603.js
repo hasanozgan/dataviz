@@ -114,7 +114,7 @@ var titles = {
   "transportation": "Transportation",
   "lawnsecurity": "Law & Security",
   "realestate": "Real Estate",
-  "whitecolar": "White Color",
+  "whitecolar": "White Collar",
   "publicservices": "Public Services"
 }
 
